@@ -1,10 +1,13 @@
 package fi.tuni.barstampere;
 
+import android.app.ProgressDialog;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.util.Log;
 import android.widget.Toast;
 
 import com.mapbox.android.core.permissions.PermissionsListener;
@@ -28,6 +31,16 @@ import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager;
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolOptions;
 import com.mapbox.mapboxsdk.utils.BitmapUtils;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 
 /**
@@ -37,6 +50,7 @@ public class MainActivity extends AppCompatActivity implements
         OnMapReadyCallback, OnLocationClickListener, PermissionsListener, OnCameraTrackingChangedListener {
 
     private PermissionsManager permissionsManager;
+    ProgressDialog pd;
     private MapView mapView;
     private MapboxMap mapboxMap;
     private LocationComponent locationComponent;
@@ -83,9 +97,13 @@ public class MainActivity extends AppCompatActivity implements
                     @Override
                     public void onAnnotationClick(Symbol symbol) {
 
-                        Toast.makeText(MainActivity.this, "Clicked",
-                                Toast.LENGTH_SHORT)
-                                .show();
+
+                        StringBuilder url = new StringBuilder(
+                                "https://bars-tampere-backend.herokuapp.com/bars/1"
+                        );
+
+                        new JsonTask().execute(url.toString());
+
                     }
                 });
             }
@@ -139,6 +157,101 @@ public class MainActivity extends AppCompatActivity implements
         } else {
             permissionsManager = new PermissionsManager(this);
             permissionsManager.requestLocationPermissions(this);
+        }
+    }
+
+    private class JsonTask extends AsyncTask<String, String, String> {
+
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+            pd = new ProgressDialog(MainActivity.this);
+            pd.setMessage("Please wait");
+            pd.setCancelable(false);
+            pd.show();
+        }
+
+        protected String doInBackground(String... params) {
+
+
+            HttpURLConnection connection = null;
+            BufferedReader reader = null;
+
+            try {
+                URL url = new URL(params[0]);
+                connection = (HttpURLConnection) url.openConnection();
+                connection.connect();
+
+
+                InputStream stream = connection.getInputStream();
+
+                reader = new BufferedReader(new InputStreamReader(stream));
+
+                StringBuffer buffer = new StringBuffer();
+                String line = "";
+
+                while ((line = reader.readLine()) != null) {
+                    buffer.append(line+"\n");
+                    Log.d("Response: ", "> " + line);
+
+                }
+
+                return buffer.toString();
+
+
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                if (connection != null) {
+                    connection.disconnect();
+                }
+                try {
+                    if (reader != null) {
+                        reader.close();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            if (pd.isShowing()){
+                pd.dismiss();
+            }
+
+            try {
+
+                // test from backend
+
+                /*
+                JSONObject jObject = new JSONObject(result);
+
+                String weather = jObject.getJSONArray("weather").
+                        getJSONObject(0).getString("main");
+
+                String temp = jObject.getJSONObject("main")
+                        .getString("temp");
+                System.out.println(weather);
+
+                String weathertemp = "Temperature: " + temp + " and " + weather;
+*/
+
+                JSONObject jObject = new JSONObject(result);
+                String weather = jObject.getString("name");
+                Toast.makeText(getApplicationContext(), weather, Toast.LENGTH_LONG).show();
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+
+
         }
     }
 
