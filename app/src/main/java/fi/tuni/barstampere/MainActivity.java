@@ -1,6 +1,7 @@
 package fi.tuni.barstampere;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -103,6 +104,7 @@ public class MainActivity extends AppCompatActivity implements
                         );
 
                         new JsonTask().execute(url.toString());
+                        startActivity(new Intent(MainActivity.this, Popup.class));
 
                     }
                 });
