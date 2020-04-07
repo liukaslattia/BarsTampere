@@ -3,6 +3,7 @@ package fi.tuni.barstampere;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
@@ -11,6 +12,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
 import com.mapbox.mapboxsdk.Mapbox;
@@ -32,6 +36,7 @@ import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager;
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolOptions;
 import com.mapbox.mapboxsdk.utils.BitmapUtils;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -43,6 +48,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Use the LocationLayerOptions class to customize the LocationComponent's device location icon.
@@ -58,7 +64,8 @@ public class MainActivity extends AppCompatActivity implements
     private boolean isInTrackingMode;
     private static final String ID_ICON_MARKER = "marker";
     private SymbolManager symbolManager;
-    private Symbol symbol;
+   // private Symbol symbol;
+    public Style style;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,11 +82,12 @@ public class MainActivity extends AppCompatActivity implements
         mapView.getMapAsync(this);
     }
 
+
     @Override
     public void onMapReady(@NonNull MapboxMap mapboxMap) {
         this.mapboxMap = mapboxMap;
         mapboxMap.getStyle(this::addMarkerToStyle);
-        mapboxMap.setStyle(Style.MAPBOX_STREETS, new Style.OnStyleLoaded() {
+        mapboxMap.setStyle(new Style.Builder().fromUri("mapbox://styles/liukaslattia/ck8m75k2z1d6i1ilkfahtspfm"), new Style.OnStyleLoaded() {
             @Override
             public void onStyleLoaded(@NonNull Style style) {
                 enableLocationComponent(style);
@@ -88,29 +96,77 @@ public class MainActivity extends AppCompatActivity implements
                 symbolManager.setIconAllowOverlap(true);
                 symbolManager.setIconIgnorePlacement(true);
 
-// Add symbol at specified lat/lon
-                Symbol symbol = symbolManager.create(new SymbolOptions()
-                        .withLatLng(new LatLng(61.5, 23.79))
-                        .withIconImage(ID_ICON_MARKER)
-                        .withIconSize(1.0f));
+                StringBuilder url = new StringBuilder(
+                        "https://bars-tampere-backend.herokuapp.com/bars"
+                );
+
+                try {
+                    String serverResponse =  new JsonTask().execute(url.toString()).get();
+                    JSONArray jsonArray = new JSONArray(serverResponse);
+
+                    Gson gson = new Gson();
+
+
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        JSONObject bar = (JSONObject) jsonArray.get(i);
+                        JsonElement element = gson.fromJson(bar.toString(), JsonElement.class);
+
+                        String barname = bar.getString("name");
+                        String lat = bar.getString("lat");
+                        double latDouble = Double.parseDouble(lat);
+                        String lon = bar.getString("lon");
+                        double lonDouble = Double.parseDouble(lon);
+
+                        Symbol symbol = symbolManager.create(new SymbolOptions()
+                                .withTextField(barname)
+                                .withData(element)
+                                .withLatLng(new LatLng(latDouble, lonDouble))
+                                .withIconImage(ID_ICON_MARKER)
+                                .withIconSize(1.0f));
+
+                        Log.d("asd1", String.valueOf(latDouble));
+                        Log.d("asd1", String.valueOf(element));
+                    }
+
+
+
+                  //  Log.d("asd1", jObject.toString());
+                } catch (ExecutionException | JSONException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+
+
 
                 symbolManager.addClickListener(new OnSymbolClickListener() {
                     @Override
                     public void onAnnotationClick(Symbol symbol) {
 
 
-                        StringBuilder url = new StringBuilder(
-                                "https://bars-tampere-backend.herokuapp.com/bars/1"
-                        );
+                        JsonObject jsonObject = symbol.getData().getAsJsonObject();
+                        String barname = jsonObject.get("name").getAsString();
+                        String opening = jsonObject.get("opening").getAsString();
+                        String closing = jsonObject.get("closing").getAsString();
 
-                        new JsonTask().execute(url.toString());
-                        startActivity(new Intent(MainActivity.this, Popup.class));
+
+                        Log.d("asd1", String.valueOf(symbol.getData()));
+
+                        Intent intent = new Intent(MainActivity.this, Popup.class);
+                        intent.putExtra("barname", barname);
+                        intent.putExtra("opening", opening);
+                        intent.putExtra("closing", closing);
+
+                        startActivity(intent);
+
 
                     }
                 });
             }
         });
     }
+
 
     private void addMarkerToStyle(Style style) {
         style.addImage(ID_ICON_MARKER,
@@ -162,8 +218,8 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
-    private class JsonTask extends AsyncTask<String, String, String> {
-
+    public class JsonTask extends AsyncTask<String, String, String> {
+        MainActivity parent;
         protected void onPreExecute() {
             super.onPreExecute();
 
@@ -229,29 +285,15 @@ public class MainActivity extends AppCompatActivity implements
 
             try {
 
-                // test from backend
 
-                /*
-                JSONObject jObject = new JSONObject(result);
+                JSONArray jsonArray = new JSONArray(result);
+                JSONObject jObject = jsonArray.getJSONObject(0);
+                String barname = jObject.getString("name");
 
-                String weather = jObject.getJSONArray("weather").
-                        getJSONObject(0).getString("main");
-
-                String temp = jObject.getJSONObject("main")
-                        .getString("temp");
-                System.out.println(weather);
-
-                String weathertemp = "Temperature: " + temp + " and " + weather;
-*/
-
-                JSONObject jObject = new JSONObject(result);
-                String weather = jObject.getString("name");
-                Toast.makeText(getApplicationContext(), weather, Toast.LENGTH_LONG).show();
 
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-
 
 
         }
