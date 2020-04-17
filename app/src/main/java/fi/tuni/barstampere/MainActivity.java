@@ -9,6 +9,9 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -47,7 +50,9 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -63,12 +68,28 @@ public class MainActivity extends AppCompatActivity implements
     private LocationComponent locationComponent;
     private boolean isInTrackingMode;
     private static final String ID_ICON_MARKER = "marker";
+    private static final String ID_ICON_MARKER1 = "marker1";
     private SymbolManager symbolManager;
+    Date currentTime;
+    String day;
+    String hour;
+    Integer hourint;
+
    // private Symbol symbol;
     public Style style;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        currentTime = Calendar.getInstance().getTime();
+
+        DateFormat df = new SimpleDateFormat("EEE", Locale.ENGLISH);
+        DateFormat df1 = new SimpleDateFormat("HH", Locale.ENGLISH);
+        day = df.format(Calendar.getInstance().getTime());
+        hour = df1.format(Calendar.getInstance().getTime());
+        hourint = Integer.parseInt(hour);
+        Log.d("asd1", String.valueOf(day));
+        Log.d("asd1", String.valueOf(hour));
+        Log.d("asd1", String.valueOf(hourint));
 
         // Mapbox access token is configured here. This needs to be called either in your application
         // object or in the same activity which contains the mapview.
@@ -87,6 +108,7 @@ public class MainActivity extends AppCompatActivity implements
     public void onMapReady(@NonNull MapboxMap mapboxMap) {
         this.mapboxMap = mapboxMap;
         mapboxMap.getStyle(this::addMarkerToStyle);
+        mapboxMap.getStyle(this::addMarkerToStyle1);
         mapboxMap.setStyle(new Style.Builder().fromUri("mapbox://styles/liukaslattia/ck8m75k2z1d6i1ilkfahtspfm"), new Style.OnStyleLoaded() {
             @Override
             public void onStyleLoaded(@NonNull Style style) {
@@ -98,12 +120,13 @@ public class MainActivity extends AppCompatActivity implements
 
                 StringBuilder url = new StringBuilder(
                         "https://bars-tampere-backend.herokuapp.com/bars"
+                       // "http://localhost:64289/bars"
                 );
 
                 try {
                     String serverResponse =  new JsonTask().execute(url.toString()).get();
                     JSONArray jsonArray = new JSONArray(serverResponse);
-
+                    Log.d("asd1", String.valueOf(jsonArray));
                     Gson gson = new Gson();
 
 
@@ -112,17 +135,199 @@ public class MainActivity extends AppCompatActivity implements
                         JsonElement element = gson.fromJson(bar.toString(), JsonElement.class);
 
                         String barname = bar.getString("name");
+                        Log.d("asd1", String.valueOf(barname));
                         String lat = bar.getString("lat");
                         double latDouble = Double.parseDouble(lat);
                         String lon = bar.getString("lon");
                         double lonDouble = Double.parseDouble(lon);
+                        String monopening = bar.getString("monopening");
+                        Integer monopeningint = Integer.parseInt(monopening);
+                        String monclosing = bar.getString("monclosing");
+                        Integer monclosingint = Integer.parseInt(monclosing);
+                        String tueopening = bar.getString("tueopening");
+                        Integer tueopeningint = Integer.parseInt(tueopening);
+                        String tueclosing = bar.getString("tueclosing");
+                        Integer tueclosingint = Integer.parseInt(tueclosing);
+                        String wedopening = bar.getString("wedopening");
+                        Integer wedopeningint = Integer.parseInt(wedopening);
+                        String wedclosing = bar.getString("wedclosing");
+                        Integer wedclosingint = Integer.parseInt(wedclosing);
+                        String thuopening = bar.getString("thuopening");
+                        Integer thuopeningint = Integer.parseInt(thuopening);
+                        String thuclosing = bar.getString("thuclosing");
+                        Integer thuclosingint = Integer.parseInt(thuclosing);
+                        String friopening = bar.getString("friopening");
+                        Integer friopeningint = Integer.parseInt(friopening);
+                        String friclosing = bar.getString("friclosing");
+                        Integer friclosingint = Integer.parseInt(friclosing);
+                        String satopening = bar.getString("satopening");
+                        Integer satopeningint = Integer.parseInt(satopening);
+                        String satclosing = bar.getString("satclosing");
+                        Integer satclosingint = Integer.parseInt(satclosing);
+                        String sunopening = bar.getString("sunopening");
+                        Integer sunopeningint = Integer.parseInt(sunopening);
+                        String sunclosing = bar.getString("sunclosing");
+                        Integer sunclosingint = Integer.parseInt(sunclosing);
 
-                        Symbol symbol = symbolManager.create(new SymbolOptions()
-                                .withTextField(barname)
-                                .withData(element)
-                                .withLatLng(new LatLng(latDouble, lonDouble))
-                                .withIconImage(ID_ICON_MARKER)
-                                .withIconSize(1.0f));
+
+                        Log.d("asd1", String.valueOf(day));
+                        if(day.equals("Mon")) {
+                            if (hourint >= monopeningint && hourint < monclosingint || hourint < sunclosingint && sunclosingint < monopeningint) {
+
+                                Symbol symbol = symbolManager.create(new SymbolOptions()
+                                        .withTextField(barname)
+                                        .withTextAnchor("top")
+                                        .withData(element)
+                                        .withLatLng(new LatLng(latDouble, lonDouble))
+                                        .withIconImage(ID_ICON_MARKER)
+                                        .withIconSize(1.0f));
+
+
+                            } else {
+                                Symbol symbol = symbolManager.create(new SymbolOptions()
+                                        .withTextField(barname)
+                                        .withTextAnchor("top")
+                                        .withData(element)
+                                        .withLatLng(new LatLng(latDouble, lonDouble))
+                                        .withIconImage(ID_ICON_MARKER1)
+                                        .withIconSize(1.0f));
+
+                            }
+
+                        } else if (day.equals("Tue")) {
+                            if (hourint >= tueopeningint && hourint < tueclosingint || hourint < monclosingint && monclosingint < tueopeningint) {
+
+                                Symbol symbol = symbolManager.create(new SymbolOptions()
+                                        .withTextField(barname)
+                                        .withTextAnchor("top")
+                                        .withData(element)
+                                        .withLatLng(new LatLng(latDouble, lonDouble))
+                                        .withIconImage(ID_ICON_MARKER)
+                                        .withIconSize(1.0f));
+
+
+                            } else {
+                                Symbol symbol = symbolManager.create(new SymbolOptions()
+                                        .withTextField(barname)
+                                        .withTextAnchor("top")
+                                        .withData(element)
+                                        .withLatLng(new LatLng(latDouble, lonDouble))
+                                        .withIconImage(ID_ICON_MARKER1)
+                                        .withIconSize(1.0f));
+
+                            }
+                        } else if (day.equals("Wed")) {
+                            if (hourint >= wedopeningint && hourint < wedclosingint|| hourint < tueclosingint && tueclosingint < wedopeningint) {
+
+                                Symbol symbol = symbolManager.create(new SymbolOptions()
+                                        .withTextField(barname)
+                                        .withTextAnchor("top")
+                                        .withData(element)
+                                        .withLatLng(new LatLng(latDouble, lonDouble))
+                                        .withIconImage(ID_ICON_MARKER)
+                                        .withIconSize(1.0f));
+
+
+                            } else {
+                                Symbol symbol = symbolManager.create(new SymbolOptions()
+                                        .withTextField(barname)
+                                        .withTextAnchor("top")
+                                        .withData(element)
+                                        .withLatLng(new LatLng(latDouble, lonDouble))
+                                        .withIconImage(ID_ICON_MARKER1)
+                                        .withIconSize(1.0f));
+                            }
+
+                            } else if (day.equals("Thu")) {
+                                if (hourint >= thuopeningint && hourint < thuclosingint || hourint < wedclosingint && wedclosingint < thuopeningint) {
+
+                                    Symbol symbol = symbolManager.create(new SymbolOptions()
+                                            .withTextField(barname)
+                                            .withTextAnchor("top")
+                                            .withData(element)
+                                            .withLatLng(new LatLng(latDouble, lonDouble))
+                                            .withIconImage(ID_ICON_MARKER)
+                                            .withIconSize(1.0f));
+
+
+                                } else {
+                                    Symbol symbol = symbolManager.create(new SymbolOptions()
+                                            .withTextField(barname)
+                                            .withTextAnchor("top")
+                                            .withData(element)
+                                            .withLatLng(new LatLng(latDouble, lonDouble))
+                                            .withIconImage(ID_ICON_MARKER1)
+                                            .withIconSize(1.0f));
+
+                                }
+                            } else if (day.equals("Fri")) {
+                            if (hourint >= friopeningint && hourint < friclosingint || hourint < thuclosingint && thuclosingint < friopeningint) {
+
+                                Symbol symbol = symbolManager.create(new SymbolOptions()
+                                        .withTextField(barname)
+                                        .withTextAnchor("top")
+                                        .withData(element)
+                                        .withLatLng(new LatLng(latDouble, lonDouble))
+                                        .withIconImage(ID_ICON_MARKER)
+                                        .withIconSize(1.0f));
+
+
+                            } else {
+                                Symbol symbol = symbolManager.create(new SymbolOptions()
+                                        .withTextField(barname)
+                                        .withTextAnchor("top")
+                                        .withData(element)
+                                        .withLatLng(new LatLng(latDouble, lonDouble))
+                                        .withIconImage(ID_ICON_MARKER1)
+                                        .withIconSize(1.0f));
+
+                            }
+                        }else if (day.equals("Sat")) {
+                            if (hourint >= satopeningint && hourint < satclosingint || hourint < friclosingint && friclosingint < satopeningint) {
+
+                                Symbol symbol = symbolManager.create(new SymbolOptions()
+                                        .withTextField(barname)
+                                        .withTextAnchor("top")
+                                        .withData(element)
+                                        .withLatLng(new LatLng(latDouble, lonDouble))
+                                        .withIconImage(ID_ICON_MARKER)
+                                        .withIconSize(1.0f));
+
+
+                            } else {
+                                Symbol symbol = symbolManager.create(new SymbolOptions()
+                                        .withTextField(barname)
+                                        .withTextAnchor("top")
+                                        .withData(element)
+                                        .withLatLng(new LatLng(latDouble, lonDouble))
+                                        .withIconImage(ID_ICON_MARKER1)
+                                        .withIconSize(1.0f));
+
+                            }
+                        }
+                        else if (day.equals("Sun")) {
+                            if (hourint >= sunopeningint && hourint < sunclosingint || hourint < satclosingint && satclosingint < sunopeningint) {
+
+                                Symbol symbol = symbolManager.create(new SymbolOptions()
+                                        .withTextField(barname)
+                                        .withTextAnchor("top")
+                                        .withData(element)
+                                        .withLatLng(new LatLng(latDouble, lonDouble))
+                                        .withIconImage(ID_ICON_MARKER)
+                                        .withIconSize(1.0f));
+
+
+                            } else {
+                                Symbol symbol = symbolManager.create(new SymbolOptions()
+                                        .withTextField(barname)
+                                        .withTextAnchor("top")
+                                        .withData(element)
+                                        .withLatLng(new LatLng(latDouble, lonDouble))
+                                        .withIconImage(ID_ICON_MARKER1)
+                                        .withIconSize(1.0f));
+
+                            }
+                        }
 
                         Log.d("asd1", String.valueOf(latDouble));
                         Log.d("asd1", String.valueOf(element));
@@ -147,12 +352,12 @@ public class MainActivity extends AppCompatActivity implements
 
                         JsonObject jsonObject = symbol.getData().getAsJsonObject();
                         String barname = jsonObject.get("name").getAsString();
-                        String opening = jsonObject.get("opening").getAsString();
-                        String closing = jsonObject.get("closing").getAsString();
+                        String opening = jsonObject.get("monopening").getAsString();
+                        String closing = jsonObject.get("monclosing").getAsString();
 
 
                         Log.d("asd1", String.valueOf(symbol.getData()));
-
+                        Log.d("asd1", String.valueOf(currentTime));
                         Intent intent = new Intent(MainActivity.this, Popup.class);
                         intent.putExtra("barname", barname);
                         intent.putExtra("opening", opening);
@@ -171,6 +376,12 @@ public class MainActivity extends AppCompatActivity implements
     private void addMarkerToStyle(Style style) {
         style.addImage(ID_ICON_MARKER,
                 BitmapUtils.getBitmapFromDrawable(getResources().getDrawable(R.drawable.marker)),
+                false);
+    }
+
+    private void addMarkerToStyle1(Style style) {
+        style.addImage(ID_ICON_MARKER1,
+                BitmapUtils.getBitmapFromDrawable(getResources().getDrawable(R.drawable.marker1)),
                 false);
     }
     @SuppressWarnings( {"MissingPermission"})
