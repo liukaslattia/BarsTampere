@@ -3,16 +3,19 @@ package fi.tuni.barstampere;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.net.InetAddress;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
@@ -55,9 +58,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 
-/**
- * Use the LocationLayerOptions class to customize the LocationComponent's device location icon.
- */
+
 public class MainActivity extends AppCompatActivity implements
         OnMapReadyCallback, OnLocationClickListener, PermissionsListener, OnCameraTrackingChangedListener {
 
@@ -75,27 +76,26 @@ public class MainActivity extends AppCompatActivity implements
     String hour;
     Integer hourint;
 
-   // private Symbol symbol;
     public Style style;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        currentTime = Calendar.getInstance().getTime();
 
+
+        super.onCreate(savedInstanceState);
+
+
+        // Init device time
+        currentTime = Calendar.getInstance().getTime();
         DateFormat df = new SimpleDateFormat("EEE", Locale.ENGLISH);
         DateFormat df1 = new SimpleDateFormat("HH", Locale.ENGLISH);
         day = df.format(Calendar.getInstance().getTime());
         hour = df1.format(Calendar.getInstance().getTime());
         hourint = Integer.parseInt(hour);
-        Log.d("asd1", String.valueOf(day));
-        Log.d("asd1", String.valueOf(hour));
-        Log.d("asd1", String.valueOf(hourint));
 
-        // Mapbox access token is configured here. This needs to be called either in your application
-        // object or in the same activity which contains the mapview.
+        // Create the map
+
         Mapbox.getInstance(this, "pk.eyJ1IjoibGl1a2FzbGF0dGlhIiwiYSI6ImNrN3JvbHhhejBlZWEzbnFkbHk1eTRwM3QifQ.LObJOtBVkfvff_ovnb1xew");
 
-        // This contains the MapView in XML and needs to be called after the access token is configured.
         setContentView(R.layout.activity_main);
 
         mapView = findViewById(R.id.mapView);
@@ -104,6 +104,47 @@ public class MainActivity extends AppCompatActivity implements
     }
 
 
+    // TO DO: Check internet access
+    /*
+    public boolean isInternetAvailable() {
+        try {
+            InetAddress ipAddr = InetAddress.getByName("google.com");
+            return !ipAddr.equals("");
+
+        } catch (Exception e) {
+            return false;
+        }
+    }
+*/
+
+    // Actionbar info button
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem m1 = menu.findItem(R.id.info);
+        m1.setEnabled(true);
+        return true;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.mainmenu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        super.onOptionsItemSelected(item);
+        switch (item.getItemId()) {
+            case (R.id.info):
+                Intent intent = new Intent(MainActivity.this, InfoPopup.class);
+                startActivity(intent);
+                return true;
+        }
+        return false;
+    }
+
+    // Set style and markers to map
     @Override
     public void onMapReady(@NonNull MapboxMap mapboxMap) {
         this.mapboxMap = mapboxMap;
@@ -118,24 +159,23 @@ public class MainActivity extends AppCompatActivity implements
                 symbolManager.setIconAllowOverlap(true);
                 symbolManager.setIconIgnorePlacement(true);
 
+                // Starts JsonTask to get json from backend
                 StringBuilder url = new StringBuilder(
                         "https://bars-tampere-backend.herokuapp.com/bars"
-                       // "http://localhost:64289/bars"
                 );
 
                 try {
                     String serverResponse =  new JsonTask().execute(url.toString()).get();
                     JSONArray jsonArray = new JSONArray(serverResponse);
-                    Log.d("asd1", String.valueOf(jsonArray));
                     Gson gson = new Gson();
 
 
+                    // Breakdown jsonArray
                     for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject bar = (JSONObject) jsonArray.get(i);
                         JsonElement element = gson.fromJson(bar.toString(), JsonElement.class);
 
                         String barname = bar.getString("name");
-                        Log.d("asd1", String.valueOf(barname));
                         String lat = bar.getString("lat");
                         double latDouble = Double.parseDouble(lat);
                         String lon = bar.getString("lon");
@@ -170,13 +210,19 @@ public class MainActivity extends AppCompatActivity implements
                         Integer sunclosingint = Integer.parseInt(sunclosing);
 
 
-                        Log.d("asd1", String.valueOf(day));
+                        // Create markers based on time NOTE: this could have been done better with more time
+
+
                         if(day.equals("Mon")) {
                             if (hourint >= monopeningint && hourint < monclosingint || hourint < sunclosingint && sunclosingint < monopeningint) {
 
                                 Symbol symbol = symbolManager.create(new SymbolOptions()
                                         .withTextField(barname)
                                         .withTextAnchor("top")
+                                        .withTextOffset(new Float[] {0f, 0.8f})
+                                        .withTextColor("black")
+                                        .withTextHaloColor("white")
+                                        .withTextHaloWidth((float)1.5)
                                         .withData(element)
                                         .withLatLng(new LatLng(latDouble, lonDouble))
                                         .withIconImage(ID_ICON_MARKER)
@@ -187,6 +233,10 @@ public class MainActivity extends AppCompatActivity implements
                                 Symbol symbol = symbolManager.create(new SymbolOptions()
                                         .withTextField(barname)
                                         .withTextAnchor("top")
+                                        .withTextOffset(new Float[] {0f, 0.8f})
+                                        .withTextColor("black")
+                                        .withTextHaloColor("white")
+                                        .withTextHaloWidth((float)1.5)
                                         .withData(element)
                                         .withLatLng(new LatLng(latDouble, lonDouble))
                                         .withIconImage(ID_ICON_MARKER1)
@@ -200,6 +250,10 @@ public class MainActivity extends AppCompatActivity implements
                                 Symbol symbol = symbolManager.create(new SymbolOptions()
                                         .withTextField(barname)
                                         .withTextAnchor("top")
+                                        .withTextOffset(new Float[] {0f, 0.8f})
+                                        .withTextColor("black")
+                                        .withTextHaloColor("white")
+                                        .withTextHaloWidth((float)1.5)
                                         .withData(element)
                                         .withLatLng(new LatLng(latDouble, lonDouble))
                                         .withIconImage(ID_ICON_MARKER)
@@ -209,6 +263,10 @@ public class MainActivity extends AppCompatActivity implements
                             } else {
                                 Symbol symbol = symbolManager.create(new SymbolOptions()
                                         .withTextField(barname)
+                                        .withTextOffset(new Float[] {0f, 0.8f})
+                                        .withTextColor("black")
+                                        .withTextHaloColor("white")
+                                        .withTextHaloWidth((float)1.5)
                                         .withTextAnchor("top")
                                         .withData(element)
                                         .withLatLng(new LatLng(latDouble, lonDouble))
@@ -222,6 +280,10 @@ public class MainActivity extends AppCompatActivity implements
                                 Symbol symbol = symbolManager.create(new SymbolOptions()
                                         .withTextField(barname)
                                         .withTextAnchor("top")
+                                        .withTextOffset(new Float[] {0f, 0.8f})
+                                        .withTextColor("black")
+                                        .withTextHaloColor("white")
+                                        .withTextHaloWidth((float)1.5)
                                         .withData(element)
                                         .withLatLng(new LatLng(latDouble, lonDouble))
                                         .withIconImage(ID_ICON_MARKER)
@@ -232,6 +294,10 @@ public class MainActivity extends AppCompatActivity implements
                                 Symbol symbol = symbolManager.create(new SymbolOptions()
                                         .withTextField(barname)
                                         .withTextAnchor("top")
+                                        .withTextOffset(new Float[] {0f, 0.8f})
+                                        .withTextColor("black")
+                                        .withTextHaloColor("white")
+                                        .withTextHaloWidth((float)1.5)
                                         .withData(element)
                                         .withLatLng(new LatLng(latDouble, lonDouble))
                                         .withIconImage(ID_ICON_MARKER1)
@@ -244,6 +310,10 @@ public class MainActivity extends AppCompatActivity implements
                                     Symbol symbol = symbolManager.create(new SymbolOptions()
                                             .withTextField(barname)
                                             .withTextAnchor("top")
+                                            .withTextOffset(new Float[] {0f, 0.8f})
+                                            .withTextColor("black")
+                                            .withTextHaloColor("white")
+                                            .withTextHaloWidth((float)1.5)
                                             .withData(element)
                                             .withLatLng(new LatLng(latDouble, lonDouble))
                                             .withIconImage(ID_ICON_MARKER)
@@ -254,6 +324,10 @@ public class MainActivity extends AppCompatActivity implements
                                     Symbol symbol = symbolManager.create(new SymbolOptions()
                                             .withTextField(barname)
                                             .withTextAnchor("top")
+                                            .withTextOffset(new Float[] {0f, 0.8f})
+                                            .withTextColor("black")
+                                            .withTextHaloColor("white")
+                                            .withTextHaloWidth((float)1.5)
                                             .withData(element)
                                             .withLatLng(new LatLng(latDouble, lonDouble))
                                             .withIconImage(ID_ICON_MARKER1)
@@ -266,6 +340,10 @@ public class MainActivity extends AppCompatActivity implements
                                 Symbol symbol = symbolManager.create(new SymbolOptions()
                                         .withTextField(barname)
                                         .withTextAnchor("top")
+                                        .withTextOffset(new Float[] {0f, 0.8f})
+                                        .withTextColor("black")
+                                        .withTextHaloColor("white")
+                                        .withTextHaloWidth((float)1.5)
                                         .withData(element)
                                         .withLatLng(new LatLng(latDouble, lonDouble))
                                         .withIconImage(ID_ICON_MARKER)
@@ -276,6 +354,10 @@ public class MainActivity extends AppCompatActivity implements
                                 Symbol symbol = symbolManager.create(new SymbolOptions()
                                         .withTextField(barname)
                                         .withTextAnchor("top")
+                                        .withTextOffset(new Float[] {0f, 0.8f})
+                                        .withTextColor("black")
+                                        .withTextHaloColor("white")
+                                        .withTextHaloWidth((float)1.5)
                                         .withData(element)
                                         .withLatLng(new LatLng(latDouble, lonDouble))
                                         .withIconImage(ID_ICON_MARKER1)
@@ -288,6 +370,10 @@ public class MainActivity extends AppCompatActivity implements
                                 Symbol symbol = symbolManager.create(new SymbolOptions()
                                         .withTextField(barname)
                                         .withTextAnchor("top")
+                                        .withTextOffset(new Float[] {0f, 0.8f})
+                                        .withTextColor("black")
+                                        .withTextHaloColor("white")
+                                        .withTextHaloWidth((float)1.5)
                                         .withData(element)
                                         .withLatLng(new LatLng(latDouble, lonDouble))
                                         .withIconImage(ID_ICON_MARKER)
@@ -298,6 +384,10 @@ public class MainActivity extends AppCompatActivity implements
                                 Symbol symbol = symbolManager.create(new SymbolOptions()
                                         .withTextField(barname)
                                         .withTextAnchor("top")
+                                        .withTextOffset(new Float[] {0f, 0.8f})
+                                        .withTextColor("black")
+                                        .withTextHaloColor("white")
+                                        .withTextHaloWidth((float)1.5)
                                         .withData(element)
                                         .withLatLng(new LatLng(latDouble, lonDouble))
                                         .withIconImage(ID_ICON_MARKER1)
@@ -311,6 +401,10 @@ public class MainActivity extends AppCompatActivity implements
                                 Symbol symbol = symbolManager.create(new SymbolOptions()
                                         .withTextField(barname)
                                         .withTextAnchor("top")
+                                        .withTextOffset(new Float[] {0f, 0.8f})
+                                        .withTextColor("black")
+                                        .withTextHaloColor("white")
+                                        .withTextHaloWidth((float)1.5)
                                         .withData(element)
                                         .withLatLng(new LatLng(latDouble, lonDouble))
                                         .withIconImage(ID_ICON_MARKER)
@@ -321,6 +415,10 @@ public class MainActivity extends AppCompatActivity implements
                                 Symbol symbol = symbolManager.create(new SymbolOptions()
                                         .withTextField(barname)
                                         .withTextAnchor("top")
+                                        .withTextOffset(new Float[] {0f, 0.8f})
+                                        .withTextColor("black")
+                                        .withTextHaloColor("white")
+                                        .withTextHaloWidth((float)1.5)
                                         .withData(element)
                                         .withLatLng(new LatLng(latDouble, lonDouble))
                                         .withIconImage(ID_ICON_MARKER1)
@@ -329,13 +427,10 @@ public class MainActivity extends AppCompatActivity implements
                             }
                         }
 
-                        Log.d("asd1", String.valueOf(latDouble));
-                        Log.d("asd1", String.valueOf(element));
                     }
 
 
 
-                  //  Log.d("asd1", jObject.toString());
                 } catch (ExecutionException | JSONException e) {
                     e.printStackTrace();
                 } catch (InterruptedException e) {
@@ -344,6 +439,7 @@ public class MainActivity extends AppCompatActivity implements
 
 
 
+                // Send data from the marker to the Popup window
 
                 symbolManager.addClickListener(new OnSymbolClickListener() {
                     @Override
@@ -352,16 +448,41 @@ public class MainActivity extends AppCompatActivity implements
 
                         JsonObject jsonObject = symbol.getData().getAsJsonObject();
                         String barname = jsonObject.get("name").getAsString();
-                        String opening = jsonObject.get("monopening").getAsString();
-                        String closing = jsonObject.get("monclosing").getAsString();
+                        String monopening = jsonObject.get("monopening").getAsString();
+                        String monclosing = jsonObject.get("monclosing").getAsString();
+                        String tueopening = jsonObject.get("tueopening").getAsString();
+                        String tueclosing = jsonObject.get("tueclosing").getAsString();
+                        String wedopening = jsonObject.get("wedopening").getAsString();
+                        String wedclosing = jsonObject.get("wedclosing").getAsString();
+                        String thuopening = jsonObject.get("thuopening").getAsString();
+                        String thuclosing = jsonObject.get("thuclosing").getAsString();
+                        String friopening = jsonObject.get("friopening").getAsString();
+                        String friclosing = jsonObject.get("friclosing").getAsString();
+                        String satopening = jsonObject.get("satopening").getAsString();
+                        String satclosing = jsonObject.get("satclosing").getAsString();
+                        String sunopening = jsonObject.get("sunopening").getAsString();
+                        String sunclosing = jsonObject.get("sunclosing").getAsString();
+
 
 
                         Log.d("asd1", String.valueOf(symbol.getData()));
                         Log.d("asd1", String.valueOf(currentTime));
                         Intent intent = new Intent(MainActivity.this, Popup.class);
                         intent.putExtra("barname", barname);
-                        intent.putExtra("opening", opening);
-                        intent.putExtra("closing", closing);
+                        intent.putExtra("monopening", monopening);
+                        intent.putExtra("monclosing", monclosing);
+                        intent.putExtra("tueopening", tueopening);
+                        intent.putExtra("tueclosing", tueclosing);
+                        intent.putExtra("wedopening", wedopening);
+                        intent.putExtra("wedclosing", wedclosing);
+                        intent.putExtra("thuopening", thuopening);
+                        intent.putExtra("thuclosing", thuclosing);
+                        intent.putExtra("friopening", friopening);
+                        intent.putExtra("friclosing", friclosing);
+                        intent.putExtra("satopening", satopening);
+                        intent.putExtra("satclosing", satclosing);
+                        intent.putExtra("sunopening", sunopening);
+                        intent.putExtra("sunclosing", sunclosing);
 
                         startActivity(intent);
 
@@ -373,12 +494,14 @@ public class MainActivity extends AppCompatActivity implements
     }
 
 
+    // Open marker
     private void addMarkerToStyle(Style style) {
         style.addImage(ID_ICON_MARKER,
                 BitmapUtils.getBitmapFromDrawable(getResources().getDrawable(R.drawable.marker)),
                 false);
     }
 
+    // Closed marker
     private void addMarkerToStyle1(Style style) {
         style.addImage(ID_ICON_MARKER1,
                 BitmapUtils.getBitmapFromDrawable(getResources().getDrawable(R.drawable.marker1)),
@@ -429,8 +552,8 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
+    // Gets json from backend
     public class JsonTask extends AsyncTask<String, String, String> {
-        MainActivity parent;
         protected void onPreExecute() {
             super.onPreExecute();
 
@@ -499,7 +622,6 @@ public class MainActivity extends AppCompatActivity implements
 
                 JSONArray jsonArray = new JSONArray(result);
                 JSONObject jObject = jsonArray.getJSONObject(0);
-                String barname = jObject.getString("name");
 
 
             } catch (JSONException e) {
@@ -514,7 +636,7 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onLocationComponentClick() {
         if (locationComponent.getLastKnownLocation() != null) {
-            Toast.makeText(this, String.format("Location",
+            Toast.makeText(this, String.format("Your Location",
                     locationComponent.getLastKnownLocation().getLatitude(),
                     locationComponent.getLastKnownLocation().getLongitude()), Toast.LENGTH_LONG).show();
         }
@@ -530,6 +652,7 @@ public class MainActivity extends AppCompatActivity implements
         // Empty on purpose
     }
 
+    // Permissions
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         permissionsManager.onRequestPermissionsResult(requestCode, permissions, grantResults);
