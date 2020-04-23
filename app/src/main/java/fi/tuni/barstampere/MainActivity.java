@@ -1,6 +1,7 @@
 package fi.tuni.barstampere;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.AsyncTask;
@@ -12,6 +13,8 @@ import java.net.InetAddress;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+
+import android.os.Vibrator;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -212,12 +215,11 @@ public class MainActivity extends AppCompatActivity implements
 
                         // Create markers based on time NOTE: this could have been done better with more time
 
-
                         if(day.equals("Mon")) {
                             if (hourint >= monopeningint && hourint < monclosingint || hourint < sunclosingint && sunclosingint < monopeningint) {
 
                                 Symbol symbol = symbolManager.create(new SymbolOptions()
-                                        .withTextField(barname)
+                                 //       .withTextField(barname)
                                         .withTextAnchor("top")
                                         .withTextOffset(new Float[] {0f, 0.8f})
                                         .withTextColor("black")
@@ -231,7 +233,7 @@ public class MainActivity extends AppCompatActivity implements
 
                             } else {
                                 Symbol symbol = symbolManager.create(new SymbolOptions()
-                                        .withTextField(barname)
+                                 //       .withTextField(barname)
                                         .withTextAnchor("top")
                                         .withTextOffset(new Float[] {0f, 0.8f})
                                         .withTextColor("black")
@@ -248,7 +250,7 @@ public class MainActivity extends AppCompatActivity implements
                             if (hourint >= tueopeningint && hourint < tueclosingint || hourint < monclosingint && monclosingint < tueopeningint) {
 
                                 Symbol symbol = symbolManager.create(new SymbolOptions()
-                                        .withTextField(barname)
+                                //        .withTextField(barname)
                                         .withTextAnchor("top")
                                         .withTextOffset(new Float[] {0f, 0.8f})
                                         .withTextColor("black")
@@ -262,7 +264,7 @@ public class MainActivity extends AppCompatActivity implements
 
                             } else {
                                 Symbol symbol = symbolManager.create(new SymbolOptions()
-                                        .withTextField(barname)
+                                 //       .withTextField(barname)
                                         .withTextOffset(new Float[] {0f, 0.8f})
                                         .withTextColor("black")
                                         .withTextHaloColor("white")
@@ -278,7 +280,7 @@ public class MainActivity extends AppCompatActivity implements
                             if (hourint >= wedopeningint && hourint < wedclosingint|| hourint < tueclosingint && tueclosingint < wedopeningint) {
 
                                 Symbol symbol = symbolManager.create(new SymbolOptions()
-                                        .withTextField(barname)
+                                 //       .withTextField(barname)
                                         .withTextAnchor("top")
                                         .withTextOffset(new Float[] {0f, 0.8f})
                                         .withTextColor("black")
@@ -292,7 +294,7 @@ public class MainActivity extends AppCompatActivity implements
 
                             } else {
                                 Symbol symbol = symbolManager.create(new SymbolOptions()
-                                        .withTextField(barname)
+                                //        .withTextField(barname)
                                         .withTextAnchor("top")
                                         .withTextOffset(new Float[] {0f, 0.8f})
                                         .withTextColor("black")
@@ -308,7 +310,7 @@ public class MainActivity extends AppCompatActivity implements
                                 if (hourint >= thuopeningint && hourint < thuclosingint || hourint < wedclosingint && wedclosingint < thuopeningint) {
 
                                     Symbol symbol = symbolManager.create(new SymbolOptions()
-                                            .withTextField(barname)
+                                          //  .withTextField(barname)
                                             .withTextAnchor("top")
                                             .withTextOffset(new Float[] {0f, 0.8f})
                                             .withTextColor("black")
@@ -322,7 +324,7 @@ public class MainActivity extends AppCompatActivity implements
 
                                 } else {
                                     Symbol symbol = symbolManager.create(new SymbolOptions()
-                                            .withTextField(barname)
+                                     //       .withTextField(barname)
                                             .withTextAnchor("top")
                                             .withTextOffset(new Float[] {0f, 0.8f})
                                             .withTextColor("black")
@@ -338,7 +340,7 @@ public class MainActivity extends AppCompatActivity implements
                             if (hourint >= friopeningint && hourint < friclosingint || hourint < thuclosingint && thuclosingint < friopeningint) {
 
                                 Symbol symbol = symbolManager.create(new SymbolOptions()
-                                        .withTextField(barname)
+                               //         .withTextField(barname)
                                         .withTextAnchor("top")
                                         .withTextOffset(new Float[] {0f, 0.8f})
                                         .withTextColor("black")
@@ -352,7 +354,7 @@ public class MainActivity extends AppCompatActivity implements
 
                             } else {
                                 Symbol symbol = symbolManager.create(new SymbolOptions()
-                                        .withTextField(barname)
+                                //        .withTextField(barname)
                                         .withTextAnchor("top")
                                         .withTextOffset(new Float[] {0f, 0.8f})
                                         .withTextColor("black")
@@ -368,7 +370,7 @@ public class MainActivity extends AppCompatActivity implements
                             if (hourint >= satopeningint && hourint < satclosingint || hourint < friclosingint && friclosingint < satopeningint) {
 
                                 Symbol symbol = symbolManager.create(new SymbolOptions()
-                                        .withTextField(barname)
+                                //        .withTextField(barname)
                                         .withTextAnchor("top")
                                         .withTextOffset(new Float[] {0f, 0.8f})
                                         .withTextColor("black")
@@ -382,7 +384,7 @@ public class MainActivity extends AppCompatActivity implements
 
                             } else {
                                 Symbol symbol = symbolManager.create(new SymbolOptions()
-                                        .withTextField(barname)
+                                //        .withTextField(barname)
                                         .withTextAnchor("top")
                                         .withTextOffset(new Float[] {0f, 0.8f})
                                         .withTextColor("black")
@@ -399,7 +401,7 @@ public class MainActivity extends AppCompatActivity implements
                             if (hourint >= sunopeningint && hourint < sunclosingint || hourint < satclosingint && satclosingint < sunopeningint) {
 
                                 Symbol symbol = symbolManager.create(new SymbolOptions()
-                                        .withTextField(barname)
+                                    //    .withTextField(barname)
                                         .withTextAnchor("top")
                                         .withTextOffset(new Float[] {0f, 0.8f})
                                         .withTextColor("black")
@@ -413,7 +415,7 @@ public class MainActivity extends AppCompatActivity implements
 
                             } else {
                                 Symbol symbol = symbolManager.create(new SymbolOptions()
-                                        .withTextField(barname)
+                                 //       .withTextField(barname)
                                         .withTextAnchor("top")
                                         .withTextOffset(new Float[] {0f, 0.8f})
                                         .withTextColor("black")
@@ -444,6 +446,9 @@ public class MainActivity extends AppCompatActivity implements
                 symbolManager.addClickListener(new OnSymbolClickListener() {
                     @Override
                     public void onAnnotationClick(Symbol symbol) {
+
+                        Vibrator vb = (Vibrator)   getSystemService(Context.VIBRATOR_SERVICE);
+                        vb.vibrate(50);
 
 
                         JsonObject jsonObject = symbol.getData().getAsJsonObject();

@@ -28,7 +28,7 @@ public class InfoPopup extends Activity {
         if (display_mode == Configuration.ORIENTATION_PORTRAIT) {
             getWindow().setLayout( (int) (width*.8),(int)(heigth*.1));
         } else {
-            getWindow().setLayout( (int) (width*.4),(int)(heigth*.2));
+            getWindow().setLayout( (int) (width*.5),(int)(heigth*.2));
         }
     }
 }
