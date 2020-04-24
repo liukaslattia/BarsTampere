@@ -216,7 +216,7 @@ public class MainActivity extends AppCompatActivity implements
                         // Create markers based on time NOTE: this could have been done better with more time
 
                         if(day.equals("Mon")) {
-                            if (hourint >= monopeningint && hourint < monclosingint || hourint < sunclosingint && sunclosingint < monopeningint) {
+                            if (hourint >= monopeningint && hourint < monclosingint || hourint < sunclosingint && sunclosingint < monopeningint ||hourint >= monopeningint && monclosingint < 8) {
 
                                 Symbol symbol = symbolManager.create(new SymbolOptions()
                                  //       .withTextField(barname)
@@ -247,7 +247,7 @@ public class MainActivity extends AppCompatActivity implements
                             }
 
                         } else if (day.equals("Tue")) {
-                            if (hourint >= tueopeningint && hourint < tueclosingint || hourint < monclosingint && monclosingint < tueopeningint) {
+                            if (hourint >= tueopeningint && hourint < tueclosingint || hourint < monclosingint && monclosingint < tueopeningint ||hourint >= tueopeningint && tueclosingint < 8) {
 
                                 Symbol symbol = symbolManager.create(new SymbolOptions()
                                 //        .withTextField(barname)
@@ -277,7 +277,7 @@ public class MainActivity extends AppCompatActivity implements
 
                             }
                         } else if (day.equals("Wed")) {
-                            if (hourint >= wedopeningint && hourint < wedclosingint|| hourint < tueclosingint && tueclosingint < wedopeningint) {
+                            if (hourint >= wedopeningint && hourint < wedclosingint|| hourint < tueclosingint && tueclosingint < wedopeningint ||hourint >= wedopeningint && wedclosingint < 8) {
 
                                 Symbol symbol = symbolManager.create(new SymbolOptions()
                                  //       .withTextField(barname)
@@ -307,7 +307,7 @@ public class MainActivity extends AppCompatActivity implements
                             }
 
                             } else if (day.equals("Thu")) {
-                                if (hourint >= thuopeningint && hourint < thuclosingint || hourint < wedclosingint && wedclosingint < thuopeningint) {
+                                if (hourint >= thuopeningint && hourint < thuclosingint || hourint < wedclosingint && wedclosingint < thuopeningint || hourint >= thuopeningint && thuclosingint < 8) {
 
                                     Symbol symbol = symbolManager.create(new SymbolOptions()
                                           //  .withTextField(barname)
@@ -337,7 +337,7 @@ public class MainActivity extends AppCompatActivity implements
 
                                 }
                             } else if (day.equals("Fri")) {
-                            if (hourint >= friopeningint && hourint < friclosingint || hourint < thuclosingint && thuclosingint < friopeningint) {
+                            if (hourint >= friopeningint && hourint < friclosingint || hourint < thuclosingint && thuclosingint < friopeningint || hourint >= friopeningint && friclosingint < 8) {
 
                                 Symbol symbol = symbolManager.create(new SymbolOptions()
                                //         .withTextField(barname)
@@ -367,7 +367,7 @@ public class MainActivity extends AppCompatActivity implements
 
                             }
                         }else if (day.equals("Sat")) {
-                            if (hourint >= satopeningint && hourint < satclosingint || hourint < friclosingint && friclosingint < satopeningint) {
+                            if (hourint >= satopeningint && hourint < satclosingint || hourint < friclosingint && friclosingint < satopeningint || hourint >= satopeningint && satclosingint < 8) {
 
                                 Symbol symbol = symbolManager.create(new SymbolOptions()
                                 //        .withTextField(barname)
@@ -398,7 +398,7 @@ public class MainActivity extends AppCompatActivity implements
                             }
                         }
                         else if (day.equals("Sun")) {
-                            if (hourint >= sunopeningint && hourint < sunclosingint || hourint < satclosingint && satclosingint < sunopeningint) {
+                            if (hourint >= sunopeningint && hourint < sunclosingint || hourint < satclosingint && satclosingint < sunopeningint || hourint >= sunopeningint && sunclosingint < 8) {
 
                                 Symbol symbol = symbolManager.create(new SymbolOptions()
                                     //    .withTextField(barname)
