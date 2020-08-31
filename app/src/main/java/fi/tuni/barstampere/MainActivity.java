@@ -216,10 +216,25 @@ public class MainActivity extends AppCompatActivity implements
                         // Create markers based on time NOTE: this could have been done better with more time
 
                         if(day.equals("Mon")) {
-                            if (hourint >= monopeningint && hourint < monclosingint || hourint < sunclosingint && sunclosingint < monopeningint ||hourint >= monopeningint && monclosingint < 8) {
+
+                            if (monopeningint == 00 && monclosingint == 00 || hourint > sunclosingint && hourint < monopeningint) {
+                                Symbol symbol = symbolManager.create(new SymbolOptions()
+                                        //       .withTextField(barname)
+                                        .withTextAnchor("top")
+                                        .withTextOffset(new Float[] {0f, 0.8f})
+                                        .withTextColor("black")
+                                        .withTextHaloColor("white")
+                                        .withTextHaloWidth((float)1.5)
+                                        .withData(element)
+                                        .withLatLng(new LatLng(latDouble, lonDouble))
+                                        .withIconImage(ID_ICON_MARKER1)
+                                        .withIconSize(1.0f));
+                            }
+
+                             else if (hourint >= monopeningint && hourint < monclosingint || hourint < sunclosingint && sunclosingint < monopeningint ||hourint >= monopeningint && monclosingint < 8) {
 
                                 Symbol symbol = symbolManager.create(new SymbolOptions()
-                                 //       .withTextField(barname)
+                                      // .withTextField("avoinna")
                                         .withTextAnchor("top")
                                         .withTextOffset(new Float[] {0f, 0.8f})
                                         .withTextColor("black")
@@ -247,7 +262,22 @@ public class MainActivity extends AppCompatActivity implements
                             }
 
                         } else if (day.equals("Tue")) {
-                            if (hourint >= tueopeningint && hourint < tueclosingint || hourint < monclosingint && monclosingint < tueopeningint ||hourint >= tueopeningint && tueclosingint < 8) {
+
+                            if (tueopeningint == 00 && tueclosingint == 00 || hourint > monclosingint && hourint < tueopeningint) {
+                                Symbol symbol = symbolManager.create(new SymbolOptions()
+                                        //       .withTextField(barname)
+                                        .withTextAnchor("top")
+                                        .withTextOffset(new Float[] {0f, 0.8f})
+                                        .withTextColor("black")
+                                        .withTextHaloColor("white")
+                                        .withTextHaloWidth((float)1.5)
+                                        .withData(element)
+                                        .withLatLng(new LatLng(latDouble, lonDouble))
+                                        .withIconImage(ID_ICON_MARKER1)
+                                        .withIconSize(1.0f));
+                            }
+
+                            else if (hourint >= tueopeningint && hourint < tueclosingint || hourint < monclosingint && monclosingint < tueopeningint ||hourint >= tueopeningint && tueclosingint < 8) {
 
                                 Symbol symbol = symbolManager.create(new SymbolOptions()
                                 //        .withTextField(barname)
@@ -277,7 +307,22 @@ public class MainActivity extends AppCompatActivity implements
 
                             }
                         } else if (day.equals("Wed")) {
-                            if (hourint >= wedopeningint && hourint < wedclosingint|| hourint < tueclosingint && tueclosingint < wedopeningint ||hourint >= wedopeningint && wedclosingint < 8) {
+
+                            if (wedopeningint == 00 && wedclosingint == 00 || hourint > tueclosingint && hourint < wedopeningint) {
+                                Symbol symbol = symbolManager.create(new SymbolOptions()
+                                        //       .withTextField(barname)
+                                        .withTextAnchor("top")
+                                        .withTextOffset(new Float[] {0f, 0.8f})
+                                        .withTextColor("black")
+                                        .withTextHaloColor("white")
+                                        .withTextHaloWidth((float)1.5)
+                                        .withData(element)
+                                        .withLatLng(new LatLng(latDouble, lonDouble))
+                                        .withIconImage(ID_ICON_MARKER1)
+                                        .withIconSize(1.0f));
+                            }
+
+                            else if (hourint >= wedopeningint && hourint < wedclosingint|| hourint < tueclosingint && tueclosingint < wedopeningint ||hourint >= wedopeningint && wedclosingint < 8) {
 
                                 Symbol symbol = symbolManager.create(new SymbolOptions()
                                  //       .withTextField(barname)
@@ -307,7 +352,21 @@ public class MainActivity extends AppCompatActivity implements
                             }
 
                             } else if (day.equals("Thu")) {
-                                if (hourint >= thuopeningint && hourint < thuclosingint || hourint < wedclosingint && wedclosingint < thuopeningint || hourint >= thuopeningint && thuclosingint < 8) {
+                            if (thuopeningint == 00 && thuclosingint == 00 || hourint > wedclosingint && hourint < thuopeningint) {
+                                Symbol symbol = symbolManager.create(new SymbolOptions()
+                                        //       .withTextField(barname)
+                                        .withTextAnchor("top")
+                                        .withTextOffset(new Float[] {0f, 0.8f})
+                                        .withTextColor("black")
+                                        .withTextHaloColor("white")
+                                        .withTextHaloWidth((float)1.5)
+                                        .withData(element)
+                                        .withLatLng(new LatLng(latDouble, lonDouble))
+                                        .withIconImage(ID_ICON_MARKER1)
+                                        .withIconSize(1.0f));
+                            }
+
+                            else if (hourint >= thuopeningint && hourint < thuclosingint || hourint < wedclosingint && wedclosingint < thuopeningint || hourint >= thuopeningint && thuclosingint < 8) {
 
                                     Symbol symbol = symbolManager.create(new SymbolOptions()
                                           //  .withTextField(barname)
@@ -337,7 +396,21 @@ public class MainActivity extends AppCompatActivity implements
 
                                 }
                             } else if (day.equals("Fri")) {
-                            if (hourint >= friopeningint && hourint < friclosingint || hourint < thuclosingint && thuclosingint < friopeningint || hourint >= friopeningint && friclosingint < 8) {
+                            if (friopeningint == 00 && friclosingint == 00 || hourint > thuclosingint && hourint < friopeningint) {
+                                Symbol symbol = symbolManager.create(new SymbolOptions()
+                                        //       .withTextField(barname)
+                                        .withTextAnchor("top")
+                                        .withTextOffset(new Float[] {0f, 0.8f})
+                                        .withTextColor("black")
+                                        .withTextHaloColor("white")
+                                        .withTextHaloWidth((float)1.5)
+                                        .withData(element)
+                                        .withLatLng(new LatLng(latDouble, lonDouble))
+                                        .withIconImage(ID_ICON_MARKER1)
+                                        .withIconSize(1.0f));
+                            }
+
+                            else if (hourint >= friopeningint && hourint < friclosingint || hourint < thuclosingint && thuclosingint < friopeningint || hourint >= friopeningint && friclosingint < 8) {
 
                                 Symbol symbol = symbolManager.create(new SymbolOptions()
                                //         .withTextField(barname)
@@ -367,7 +440,21 @@ public class MainActivity extends AppCompatActivity implements
 
                             }
                         }else if (day.equals("Sat")) {
-                            if (hourint >= satopeningint && hourint < satclosingint || hourint < friclosingint && friclosingint < satopeningint || hourint >= satopeningint && satclosingint < 8) {
+                            if (satopeningint == 00 && satclosingint == 00 || hourint > friclosingint && hourint < satopeningint) {
+                                Symbol symbol = symbolManager.create(new SymbolOptions()
+                                        //       .withTextField(barname)
+                                        .withTextAnchor("top")
+                                        .withTextOffset(new Float[] {0f, 0.8f})
+                                        .withTextColor("black")
+                                        .withTextHaloColor("white")
+                                        .withTextHaloWidth((float)1.5)
+                                        .withData(element)
+                                        .withLatLng(new LatLng(latDouble, lonDouble))
+                                        .withIconImage(ID_ICON_MARKER1)
+                                        .withIconSize(1.0f));
+                            }
+
+                            else if (hourint >= satopeningint && hourint < satclosingint || hourint < friclosingint && friclosingint < satopeningint || hourint >= satopeningint && satclosingint < 8) {
 
                                 Symbol symbol = symbolManager.create(new SymbolOptions()
                                 //        .withTextField(barname)
@@ -398,7 +485,21 @@ public class MainActivity extends AppCompatActivity implements
                             }
                         }
                         else if (day.equals("Sun")) {
-                            if (hourint >= sunopeningint && hourint < sunclosingint || hourint < satclosingint && satclosingint < sunopeningint || hourint >= sunopeningint && sunclosingint < 8) {
+                            if (sunopeningint == 00 && sunclosingint == 00 || hourint > satclosingint && hourint < sunopeningint) {
+                                Symbol symbol = symbolManager.create(new SymbolOptions()
+                                        //       .withTextField(barname)
+                                        .withTextAnchor("top")
+                                        .withTextOffset(new Float[] {0f, 0.8f})
+                                        .withTextColor("black")
+                                        .withTextHaloColor("white")
+                                        .withTextHaloWidth((float)1.5)
+                                        .withData(element)
+                                        .withLatLng(new LatLng(latDouble, lonDouble))
+                                        .withIconImage(ID_ICON_MARKER1)
+                                        .withIconSize(1.0f));
+                            }
+
+                            else if (hourint >= sunopeningint && hourint < sunclosingint || hourint < satclosingint && satclosingint < sunopeningint || hourint >= sunopeningint && sunclosingint < 8) {
 
                                 Symbol symbol = symbolManager.create(new SymbolOptions()
                                     //    .withTextField(barname)
